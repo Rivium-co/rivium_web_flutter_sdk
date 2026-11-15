@@ -67,3 +67,29 @@ void setDismissedUntil(DateTime until) {
     // storage blocked: the guide comes back next time
   }
 }
+
+/// [path] next to the app (its `<base href>`), never from a cache. Null when it can't be read.
+Future<String?> fetchText(String path) async {
+  try {
+    final url = Uri.parse(web.document.baseURI).resolve(path).replace(queryParameters: {
+      't': '${DateTime.now().millisecondsSinceEpoch}',
+    });
+    final response = await web.window.fetch(url.toString().toJS, web.RequestInit(cache: 'no-store')).toDart;
+    if (!response.ok) return null;
+    return (await response.text().toDart).toDart;
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Calls [callback] each time the page comes back to the front.
+void onVisible(void Function() callback) {
+  web.document.addEventListener(
+    'visibilitychange',
+    ((web.Event _) {
+      if (web.document.visibilityState == 'visible') callback();
+    }).toJS,
+  );
+}
+
+void reloadPage() => web.window.location.reload();

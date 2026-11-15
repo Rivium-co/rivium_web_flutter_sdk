@@ -7,7 +7,7 @@ For Flutter web apps that people install on their phone (PWA): where the app run
 
 ```yaml
 dependencies:
-  rivium_web: ^0.1.1
+  rivium_web: ^0.2.0
 ```
 
 ## Install guide
@@ -33,5 +33,22 @@ where.installed;      // opened from the Home Screen
 where.installNeed;    // none, iosAddToHomeScreen, androidInstall, openInBrowser
 where.inAppBrowser;   // 'Instagram', … or null
 ```
+
+## New versions
+
+```dart
+void main() {
+  RiviumWebUpdates.start(); // version.json now, when the app comes back, and every 10 minutes
+  runApp(MaterialApp(
+    builder: (context, child) => RiviumUpdateGate(child: child!), // required updates
+    home: …,
+  ));
+}
+
+RiviumUpdatePrompt(icon: Image.asset('assets/icon.png')) // "New version available" · Reload · Later
+```
+
+Optional `web/update.json`: `{"minimum": "0.6.0", "notes": {"en": "…"}}` — below `minimum` the update is
+required.
 
 Docs: https://rivium.co/docs/push/install-guide

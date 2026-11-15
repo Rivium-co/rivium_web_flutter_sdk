@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0] - 2026-11-15
+
+### Added
+- New versions: `RiviumWebUpdates.start()` reads `version.json` when the app starts (the version running) and again
+  when it comes back to the front and every 10 minutes. `RiviumUpdatePrompt` shows "New version available" with
+  Reload and Later; `RiviumUpdateGate` covers the app with a required update when an optional `update.json` says
+  `minimum` is newer than the running version, with "What's new" notes.
+- `RiviumWebUpdates.runningVersion`: the version running in this page (`package_info_plus` on the web reads the
+  server's version.json, already the new one after a deploy).
+
 ## [0.1.1] - 2026-11-15
 
 ### Changed
