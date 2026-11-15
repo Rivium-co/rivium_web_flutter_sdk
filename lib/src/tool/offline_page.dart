@@ -28,6 +28,22 @@ String? parseHex(Object? value) {
   return RegExp(r'^#[0-9a-fA-F]{6}$').hasMatch(hex) ? hex.toUpperCase() : null;
 }
 
+/// [a] mixed with [b] by [amount] (0–1), both "#RRGGBB".
+String mix(String a, String b, double amount) {
+  final x = int.parse(a.substring(1), radix: 16), y = int.parse(b.substring(1), radix: 16);
+  String part(int shift) {
+    final p = (x >> shift) & 0xFF, q = (y >> shift) & 0xFF;
+    return (p + (q - p) * amount).round().clamp(0, 255).toRadixString(16).padLeft(2, '0');
+  }
+
+  return '#${part(16)}${part(8)}${part(0)}'.toUpperCase();
+}
+
+String rgba(String hex, double alpha) {
+  final v = int.parse(hex.substring(1), radix: 16);
+  return 'rgba(${(v >> 16) & 0xFF}, ${(v >> 8) & 0xFF}, ${v & 0xFF}, $alpha)';
+}
+
 /// [hex] mixed with white by [amount] (0–1).
 String lighten(String hex, double amount) {
   final v = int.parse(hex.substring(1), radix: 16);
@@ -39,12 +55,14 @@ String lighten(String hex, double amount) {
   return '#${part(16)}${part(8)}${part(0)}'.toUpperCase();
 }
 
-/// The first non-maskable icon of [manifest] (the largest up to 192px is enough for the page).
-String? manifestIcon(Map<String, dynamic> manifest) {
+/// A non-maskable icon of [manifest]: the one closest to 192px, or the largest when [largest].
+String? manifestIcon(Map<String, dynamic> manifest, {bool largest = false}) {
   final icons = (manifest['icons'] as List? ?? const []).whereType<Map>().toList();
   int size(Map icon) => int.tryParse('${icon['sizes'] ?? ''}'.split('x').first) ?? 0;
   final plain = icons.where((i) => '${i['purpose'] ?? 'any'}'.contains('any')).toList()
-    ..sort((a, b) => (size(a) - 192).abs().compareTo((size(b) - 192).abs()));
+    ..sort(largest
+        ? (a, b) => size(b).compareTo(size(a))
+        : (a, b) => (size(a) - 192).abs().compareTo((size(b) - 192).abs()));
   return plain.isEmpty ? null : plain.first['src'] as String?;
 }
 
@@ -53,8 +71,8 @@ String _html(String text) => const HtmlEscape().convert(text);
 /// The offline page: everything inline (styles, icon, texts), so it works from the cache alone.
 String offlineHtml(OfflineApp app) {
   final bg = app.background;
-  final mid = lighten(bg, 0.06);
-  final glow = lighten(bg, 0.14);
+  final mid = mix(bg, app.accent, 0.12);
+  final glow = mix(bg, app.accent, 0.3);
   final name = _html(app.name);
   final nameJs = jsonEncode(app.name);
   final icon = app.iconDataUri == null ? '' : '<img class="logo" src="${app.iconDataUri}" alt="">';
@@ -77,7 +95,7 @@ String offlineHtml(OfflineApp app) {
   .badge { position: relative; width: 88px; height: 88px; }
   .logo {
     width: 88px; height: 88px; border-radius: 24px; filter: saturate(0.6) brightness(0.9);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 12px 40px ${_rgba(app.accent, 0.35)};
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 12px 40px ${rgba(app.accent, 0.35)};
   }
   .off {
     position: absolute; right: -10px; bottom: -10px; width: 34px; height: 34px; border-radius: 50%;
@@ -90,7 +108,7 @@ String offlineHtml(OfflineApp app) {
     margin-top: 30px; min-width: 180px; height: 50px; padding: 0 28px; border: 0; border-radius: 25px;
     font: inherit; font-size: 16px; font-weight: 650; color: #FFFFFF; cursor: pointer;
     background: linear-gradient(135deg, ${lighten(app.accent, 0.12)}, ${app.accent});
-    box-shadow: 0 10px 30px ${_rgba(app.accent, 0.45)}, inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 30px ${rgba(app.accent, 0.45)}, inset 0 1px 0 rgba(255, 255, 255, 0.18);
     display: inline-flex; align-items: center; justify-content: center; gap: 10px;
     -webkit-tap-highlight-color: transparent; transition: transform 120ms ease, opacity 200ms ease;
   }
@@ -153,10 +171,6 @@ String offlineHtml(OfflineApp app) {
 ''';
 }
 
-String _rgba(String hex, double alpha) {
-  final v = int.parse(hex.substring(1), radix: 16);
-  return 'rgba(${(v >> 16) & 0xFF}, ${(v >> 8) & 0xFF}, ${v & 0xFF}, $alpha)';
-}
 
 /// The block added to the root service worker: opening the app with no network shows offline.html. [version] changes
 /// with the page, so the worker updates and caches the new page.

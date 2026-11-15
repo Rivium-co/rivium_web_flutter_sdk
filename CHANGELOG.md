@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0] - 2026-11-15
+
+### Added
+- `dart run rivium_web:setup` also writes the launch screen into `web/index.html` (the app's icon with a glow, its
+  name, a loading bar, fades out on Flutter's first frame) and the iPhone and iPad splash images (`web/splash/`, the
+  same screen, rendered with Google Chrome) with their `apple-touch-startup-image` tags. `--no-splash` skips the images.
+- The launch screen, splash images and offline page share one look: the background colour with a glow of the accent.
+
 ## [0.3.0] - 2026-11-15
 
 ### Added

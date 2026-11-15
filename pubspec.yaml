@@ -1,6 +1,6 @@
 name: rivium_web
 description: "Rivium Web for Flutter web apps that people install on their phone (PWA): where the app runs, and a ready-made Add to Home Screen guide."
-version: 0.3.0
+version: 0.4.0
 homepage: https://rivium.co
 repository: https://github.com/Rivium-co/rivium_web_flutter_sdk
 

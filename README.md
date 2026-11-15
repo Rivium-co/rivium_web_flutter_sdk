@@ -7,7 +7,7 @@ For Flutter web apps that people install on their phone (PWA): where the app run
 
 ```yaml
 dependencies:
-  rivium_web: ^0.3.0
+  rivium_web: ^0.4.0
 ```
 
 ## Install guide
@@ -58,15 +58,21 @@ flutter build web --release --build-number=13
 Optional `web/update.json`: `{"minimum": "0.6.0", "notes": {"en": "…"}}` — below `minimum` the update is
 required.
 
-## Offline page
+## Launch screen, splash images and offline page
 
 ```bash
 dart run rivium_push:web_push_setup --root
 dart run rivium_web:setup --accent "#1C72C8"
 ```
 
-Writes `web/offline.html` (name, colours and icon from `web/manifest.json`, `--accent` for the button) and adds it to
-the root service worker `web/rivium-push-sw.js`: opening the app with no network shows it, and it reloads when the
-connection is back. Run both again after upgrading `rivium_push`, and when the manifest or icon change.
+From `web/manifest.json` (name, `background_color`, icons) and `--accent`:
+
+- the launch screen in `web/index.html` (icon, name, loading bar), until Flutter's first frame;
+- the iPhone and iPad splash images in `web/splash/` with their tags in `web/index.html` (needs Google Chrome;
+  `--no-splash` skips them);
+- `web/offline.html`, added to the root service worker `web/rivium-push-sw.js`: opening the app with no network
+  shows it, and it reloads when the connection is back.
+
+Run both again after upgrading `rivium_push`, and when the manifest or icons change.
 
 Docs: https://rivium.co/docs/push/install-guide
