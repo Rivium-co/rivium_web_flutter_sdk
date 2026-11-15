@@ -6,7 +6,15 @@ import 'card.dart';
 import 'update_strings.dart';
 import 'updates.dart';
 
-String _shown(String version) => version.split('+').first;
+/// "Version 0.5.2", or "Version 0.5.1 (build 13)" when only the build changed.
+String _shown(RiviumUpdateStrings text, RiviumUpdateInfo info) {
+  final latest = info.latest.split('+');
+  final running = info.running.split('+');
+  if (latest.length > 1 && info.latest != info.running && latest.first == running.first) {
+    return text.versionBuild?.call(latest.first, latest.last) ?? text.version('${latest.first} (${latest.last})');
+  }
+  return text.version(latest.first);
+}
 
 RiviumUpdateStrings _strings(BuildContext context, RiviumUpdateStrings? strings) =>
     strings ?? RiviumUpdateStrings.forLanguage(Localizations.maybeLocaleOf(context)?.languageCode ?? 'en');
@@ -70,7 +78,7 @@ class RiviumUpdatePrompt extends StatelessWidget {
               accent: accentColor ?? Theme.of(context).colorScheme.primary,
               icon: icon ?? const Icon(Icons.rocket_launch_rounded, color: Colors.white, size: 28),
               title: text.title,
-              subtitle: text.version(_shown(info.latest)),
+              subtitle: _shown(text, info),
               body: _body(context, text, info, text.body),
               secondary: (text.later, () => _later.value = info.latest),
               primary: (Icons.refresh_rounded, text.reload, RiviumWebUpdates.reload),
@@ -129,7 +137,7 @@ class RiviumUpdateGate extends StatelessWidget {
                           accent: accentColor ?? Theme.of(context).colorScheme.primary,
                           icon: icon ?? const Icon(Icons.system_update_rounded, color: Colors.white, size: 28),
                           title: text.requiredTitle,
-                          subtitle: text.version(_shown(info.latest)),
+                          subtitle: _shown(text, info),
                           body: _body(context, text, info, text.requiredBody),
                           primary: (Icons.refresh_rounded, text.reload, RiviumWebUpdates.reload),
                         ),

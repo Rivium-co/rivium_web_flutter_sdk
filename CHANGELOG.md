@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1] - 2026-11-15
+
+### Changed
+- `RiviumUpdatePrompt` and `RiviumUpdateGate` show the build ("Version 0.5.1 (build 13)") when the new deploy has the
+  same version as the running one.
+- `RiviumUpdateStrings.versionBuild` (optional): the text for that case.
+
 ## [0.2.0] - 2026-11-15
 
 ### Added

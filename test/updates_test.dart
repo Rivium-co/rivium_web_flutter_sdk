@@ -90,4 +90,14 @@ void main() {
     expect(find.text('Later'), findsNothing);
     expect(find.text('work'), findsOneWidget); // still behind the blur
   });
+
+  testWidgets('a deploy with the same version shows its build', (tester) async {
+    await RiviumWebUpdates.checkNow();
+    server.version = '{"version":"0.5.1","build_number":"13"}';
+    await RiviumWebUpdates.checkNow();
+    await tester.pumpWidget(app(const RiviumUpdatePrompt()));
+    await tester.pumpAndSettle();
+    expect(find.text('New version available'), findsOneWidget);
+    expect(find.text('Version 0.5.1 (build 13)'), findsOneWidget);
+  });
 }

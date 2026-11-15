@@ -9,12 +9,16 @@ class RiviumUpdateStrings {
     required this.whatsNew,
     required this.reload,
     required this.later,
+    this.versionBuild,
   });
 
   final String title;
 
   /// "Version {v}".
   final String Function(String version) version;
+
+  /// "Version {v} (build {b})": shown when the new deploy has the same version as the running one.
+  final String Function(String version, String build)? versionBuild;
   final String body;
   final String requiredTitle;
   final String requiredBody;
@@ -31,6 +35,7 @@ class RiviumUpdateStrings {
     whatsNew: 'What’s new',
     reload: 'Reload',
     later: 'Later',
+    versionBuild: (v, b) => 'Version $v (build $b)',
   );
 
   static RiviumUpdateStrings forLanguage(String languageCode) => en;
