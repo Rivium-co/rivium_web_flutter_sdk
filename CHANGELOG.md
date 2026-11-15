@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1] - 2026-11-15
+
+### Changed
+- iPhone and iPad steps follow Safari's layout: Safari 26 on iPhone (Share under ⋯ at the bottom), Safari up to 18 on
+  iPhone (Share at the bottom), iPad (Share at the top). "In Safari's Share menu:" above the picture of the "Add to Home
+  Screen" row, which is a picture, not a button; "scroll down if you don't see it, then tap Add".
+- `RiviumWebContext.isIpad` and `safariVersion` (Safari 26 still reports iOS 18.6 in its user agent).
+
 ## [0.1.0] - 2026-11-15
 
 ### Added

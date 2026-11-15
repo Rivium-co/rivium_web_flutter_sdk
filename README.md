@@ -7,7 +7,7 @@ For Flutter web apps that people install on their phone (PWA): where the app run
 
 ```yaml
 dependencies:
-  rivium_web: ^0.1.0
+  rivium_web: ^0.1.1
 ```
 
 ## Install guide

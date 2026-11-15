@@ -9,6 +9,9 @@ class RiviumInstallStrings {
     required this.title,
     required this.benefit,
     required this.iosShare,
+    required this.iosShareIpad,
+    required this.iosShareMore,
+    required this.menuCaption,
     required this.iosAdd,
     required this.openFromIcon,
     required this.androidMenu,
@@ -35,7 +38,17 @@ class RiviumInstallStrings {
 
   /// Why: notifications, faster opening.
   final String benefit;
+  /// iPhone, Safari up to 18: the Share button at the bottom.
   final String iosShare;
+
+  /// iPad: the Share button at the top.
+  final String iosShareIpad;
+
+  /// iPhone, Safari 26 and later: Share is under ⋯.
+  final String iosShareMore;
+
+  /// Above the picture of the menu row.
+  final String menuCaption;
   final String iosAdd;
 
   /// "Open {app} from its new icon".
@@ -59,8 +72,11 @@ class RiviumInstallStrings {
     menuAddToHome: 'Add to Home Screen',
     title: (app) => 'Add $app to your Home Screen',
     benefit: 'Get notifications and open it faster, like an app.',
-    iosShare: 'Tap the Share button',
-    iosAdd: 'Choose “Add to Home Screen”',
+    iosShare: 'Tap the Share button at the bottom of Safari',
+    iosShareIpad: 'Tap the Share button at the top of Safari',
+    iosShareMore: 'Tap ⋯ at the bottom of Safari, then Share',
+    menuCaption: 'In Safari’s Share menu:',
+    iosAdd: 'Choose “Add to Home Screen” (scroll down if you don’t see it), then tap Add',
     openFromIcon: (app) => 'Open $app from its new icon',
     androidMenu: 'Tap the browser menu ⋮',
     androidAdd: 'Choose “Install app” or “Add to Home screen”',

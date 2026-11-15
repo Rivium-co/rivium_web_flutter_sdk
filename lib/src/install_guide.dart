@@ -58,8 +58,12 @@ class RiviumInstallGuide extends StatelessWidget {
         final inApp = need == RiviumInstallNeed.openInBrowser;
         final steps = switch (need) {
           RiviumInstallNeed.iosAddToHomeScreen => [
-              _Step(text.iosShare, cue: const _ShareCue()),
-              _Step(text.iosAdd, cue: _MenuRowCue(text.menuAddToHome)),
+              // Safari 26 put Share under ⋯; on iPad the button is at the top.
+              if (!where.isIpad && (where.safariVersion ?? 0) >= 26)
+                _Step(text.iosShareMore, cue: const _ShareCue(more: true))
+              else
+                _Step(where.isIpad ? text.iosShareIpad : text.iosShare, cue: const _ShareCue()),
+              _Step(text.iosAdd, cue: _MenuRowCue(text.menuAddToHome, caption: text.menuCaption)),
               _Step(text.openFromIcon(appName)),
             ],
           RiviumInstallNeed.androidInstall when !where.canPromptInstall => [
@@ -402,31 +406,60 @@ class _StepRow extends StatelessWidget {
   }
 }
 
-/// The iPhone Share button, as Safari draws it.
+/// The iPhone Share button, as Safari draws it ([more]: Safari 26's ⋯ first).
 class _ShareCue extends StatelessWidget {
-  const _ShareCue();
+  const _ShareCue({this.more = false});
+  final bool more;
+
+  Widget _button(IconData icon) => Container(
+        padding: const EdgeInsets.all(7),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0A84FF).withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, size: 20, color: const Color(0xFF0A84FF)),
+      );
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(7),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0A84FF).withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: const Icon(Icons.ios_share, size: 20, color: Color(0xFF0A84FF)),
+    if (!more) return _button(Icons.ios_share);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _button(Icons.more_horiz),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          child: Icon(Icons.arrow_forward_rounded, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+        _button(Icons.ios_share),
+      ],
     );
   }
 }
 
 /// The "Add to Home Screen" row of the iPhone share menu, as iOS draws it.
 class _MenuRowCue extends StatelessWidget {
-  const _MenuRowCue(this.label);
+  const _MenuRowCue(this.label, {required this.caption});
   final String label;
+
+  /// "In Safari's Share menu:" — the row is a picture of what to find there, not a button.
+  final String caption;
 
   @override
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(caption,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+        const SizedBox(height: 6),
+        _row(dark),
+      ],
+    );
+  }
+
+  Widget _row(bool dark) {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(

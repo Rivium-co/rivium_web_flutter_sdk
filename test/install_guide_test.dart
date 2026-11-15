@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'web_context_test.dart' show iPhoneSafari, iPhoneInstagram, androidChrome;
+import 'web_context_test.dart' show iPhoneSafari, iPhoneSafari26, iPad, iPhoneInstagram, androidChrome;
 
 Widget app(Widget child, {Locale locale = const Locale('en')}) => MaterialApp(
       locale: locale,
@@ -24,11 +24,23 @@ void main() {
     expect(find.text('Lino'), findsOneWidget);
     expect(find.text('Install the app'), findsOneWidget);
     expect(find.text('Notifications'), findsOneWidget);
-    expect(find.text('Tap the Share button'), findsOneWidget);
+    expect(find.text('Tap the Share button at the bottom of Safari'), findsOneWidget);
+    expect(find.text('In Safari’s Share menu:'), findsOneWidget);
     expect(find.byIcon(Icons.ios_share), findsOneWidget);
     expect(find.text('Add to Home Screen'), findsOneWidget);
     expect(find.text('Open Lino from its new icon'), findsOneWidget);
     expect(find.text('Install'), findsNothing);
+  });
+
+  testWidgets('Safari 26: Share is under ⋯; iPad: the Share button at the top', (tester) async {
+    await tester.pumpWidget(app(RiviumInstallGuide(appName: 'Lino', context: ctx(iPhoneSafari26))));
+    await tester.pumpAndSettle();
+    expect(find.text('Tap ⋯ at the bottom of Safari, then Share'), findsOneWidget);
+    expect(find.byIcon(Icons.more_horiz), findsOneWidget);
+    await tester.pumpWidget(app(RiviumInstallGuide(
+        appName: 'Lino', context: RiviumWebContext.fromUserAgent(iPad, installed: false, maxTouchPoints: 5))));
+    await tester.pumpAndSettle();
+    expect(find.text('Tap the Share button at the top of Safari'), findsOneWidget);
   });
 
   testWidgets('installed: nothing at all', (tester) async {
